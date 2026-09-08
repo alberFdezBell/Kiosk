@@ -176,7 +176,7 @@ class MainActivity : AppCompatActivity() {
         // Protect from overflowing screen bounds
         val displayMetrics = resources.displayMetrics
         val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
-        val estimatedClockWidthDp = newSize * 3.5f // Approximate character width factor
+        val estimatedClockWidthDp = newSize * 3.5f
 
         if (delta > 0 && estimatedClockWidthDp > (screenWidthDp - 20)) {
             Toast.makeText(this, "Límite máximo alcanzado para esta pantalla", Toast.LENGTH_SHORT).show()
@@ -353,23 +353,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initClockPosition() {
-        val parentW = binding.offOverlay.width
-        val parentH = binding.offOverlay.height
-        val clockW = binding.clockContainer.width
-        val clockH = binding.clockContainer.height
+        // Hard-lock initial position dead-center in the middle of the screen
+        val params = binding.clockContainer.layoutParams as FrameLayout.LayoutParams
+        params.gravity = android.view.Gravity.CENTER
+        binding.clockContainer.layoutParams = params
 
-        if (parentW > 0 && parentH > 0 && clockW > 0 && clockH > 0) {
-            val params = binding.clockContainer.layoutParams as FrameLayout.LayoutParams
-            params.gravity = android.view.Gravity.TOP or android.view.Gravity.START
-            binding.clockContainer.layoutParams = params
-
-            val centerX = ((parentW - clockW) / 2).toFloat().coerceAtLeast(0f)
-            val centerY = ((parentH - clockH) / 2).toFloat().coerceAtLeast(0f)
-
-            binding.clockContainer.x = centerX
-            binding.clockContainer.y = centerY
-            updateDebugInfo()
-        }
+        binding.clockContainer.translationX = 0f
+        binding.clockContainer.translationY = 0f
+        updateDebugInfo()
     }
 
     private fun shiftClockPositionPerMinute() {
@@ -380,20 +371,17 @@ class MainActivity : AppCompatActivity() {
 
         if (parentW <= 0 || parentH <= 0 || clockW <= 0 || clockH <= 0) return
 
-        val centerX = ((parentW - clockW) / 2).toFloat()
-        val centerY = ((parentH - clockH) / 2).toFloat()
-
-        // Shift by a subtle random offset (between -40px and +40px) around center
+        // Subtle offset relative to dead center (between -40px and +40px)
         val maxOffset = 40f
-        val maxX = (parentW - clockW).toFloat().coerceAtLeast(0f)
-        val maxY = (parentH - clockH).toFloat().coerceAtLeast(0f)
+        val maxTranslationX = ((parentW - clockW) / 2f - 10f).coerceAtLeast(0f).coerceAtMost(maxOffset)
+        val maxTranslationY = ((parentH - clockH) / 2f - 10f).coerceAtLeast(0f).coerceAtMost(maxOffset)
 
-        val targetX = (centerX + Random.nextFloat() * (maxOffset * 2) - maxOffset).coerceIn(0f, maxX)
-        val targetY = (centerY + Random.nextFloat() * (maxOffset * 2) - maxOffset).coerceIn(0f, maxY)
+        val targetTranslationX = if (maxTranslationX > 0f) (Random.nextFloat() * (maxTranslationX * 2) - maxTranslationX) else 0f
+        val targetTranslationY = if (maxTranslationY > 0f) (Random.nextFloat() * (maxTranslationY * 2) - maxTranslationY) else 0f
 
         binding.clockContainer.animate()
-            .x(targetX)
-            .y(targetY)
+            .translationX(targetTranslationX)
+            .translationY(targetTranslationY)
             .setDuration(600L)
             .start()
 
@@ -402,10 +390,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateDebugInfo() {
         if (debugEnabled) {
-            val posX = binding.clockContainer.x.toInt()
-            val posY = binding.clockContainer.y.toInt()
+            val transX = binding.clockContainer.translationX.toInt()
+            val transY = binding.clockContainer.translationY.toInt()
             val stateName = currentState.name
-            binding.tvDebugOverlay.text = "[DEBUG]\nEstado: $stateName\nTamaño: ${clockSizeSp}sp\nReloj X: ${posX}px, Y: ${posY}px\nMinuto: $lastMinute"
+            binding.tvDebugOverlay.text = "[DEBUG]\nEstado: $stateName\nTamaño: ${clockSizeSp}sp\nOffset X: ${transX}px, Y: ${transY}px\nMinuto: $lastMinute"
         }
     }
 
