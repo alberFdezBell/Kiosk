@@ -6,9 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -25,6 +28,15 @@ public final class ActivityMainBinding implements ViewBinding {
 
   @NonNull
   public final Button btnSave;
+
+  @NonNull
+  public final CheckBox cbDvdMove;
+
+  @NonNull
+  public final CheckBox cbShowClock;
+
+  @NonNull
+  public final LinearLayout clockContainer;
 
   @NonNull
   public final FrameLayout contentFrame;
@@ -45,21 +57,32 @@ public final class ActivityMainBinding implements ViewBinding {
   public final EditText etUrl;
 
   @NonNull
-  public final View offOverlay;
+  public final FrameLayout offOverlay;
 
   @NonNull
   public final ScrollView settingsDrawer;
 
   @NonNull
+  public final TextView tvClockDate;
+
+  @NonNull
+  public final TextView tvClockTime;
+
+  @NonNull
   public final WebView webView;
 
   private ActivityMainBinding(@NonNull DrawerLayout rootView, @NonNull Button btnSave,
-      @NonNull FrameLayout contentFrame, @NonNull View dimOverlay,
-      @NonNull DrawerLayout drawerLayout, @NonNull EditText etDimTime, @NonNull EditText etOffTime,
-      @NonNull EditText etUrl, @NonNull View offOverlay, @NonNull ScrollView settingsDrawer,
-      @NonNull WebView webView) {
+      @NonNull CheckBox cbDvdMove, @NonNull CheckBox cbShowClock,
+      @NonNull LinearLayout clockContainer, @NonNull FrameLayout contentFrame,
+      @NonNull View dimOverlay, @NonNull DrawerLayout drawerLayout, @NonNull EditText etDimTime,
+      @NonNull EditText etOffTime, @NonNull EditText etUrl, @NonNull FrameLayout offOverlay,
+      @NonNull ScrollView settingsDrawer, @NonNull TextView tvClockDate,
+      @NonNull TextView tvClockTime, @NonNull WebView webView) {
     this.rootView = rootView;
     this.btnSave = btnSave;
+    this.cbDvdMove = cbDvdMove;
+    this.cbShowClock = cbShowClock;
+    this.clockContainer = clockContainer;
     this.contentFrame = contentFrame;
     this.dimOverlay = dimOverlay;
     this.drawerLayout = drawerLayout;
@@ -68,6 +91,8 @@ public final class ActivityMainBinding implements ViewBinding {
     this.etUrl = etUrl;
     this.offOverlay = offOverlay;
     this.settingsDrawer = settingsDrawer;
+    this.tvClockDate = tvClockDate;
+    this.tvClockTime = tvClockTime;
     this.webView = webView;
   }
 
@@ -104,6 +129,24 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.cbDvdMove;
+      CheckBox cbDvdMove = ViewBindings.findChildViewById(rootView, id);
+      if (cbDvdMove == null) {
+        break missingId;
+      }
+
+      id = R.id.cbShowClock;
+      CheckBox cbShowClock = ViewBindings.findChildViewById(rootView, id);
+      if (cbShowClock == null) {
+        break missingId;
+      }
+
+      id = R.id.clockContainer;
+      LinearLayout clockContainer = ViewBindings.findChildViewById(rootView, id);
+      if (clockContainer == null) {
+        break missingId;
+      }
+
       id = R.id.contentFrame;
       FrameLayout contentFrame = ViewBindings.findChildViewById(rootView, id);
       if (contentFrame == null) {
@@ -137,7 +180,7 @@ public final class ActivityMainBinding implements ViewBinding {
       }
 
       id = R.id.offOverlay;
-      View offOverlay = ViewBindings.findChildViewById(rootView, id);
+      FrameLayout offOverlay = ViewBindings.findChildViewById(rootView, id);
       if (offOverlay == null) {
         break missingId;
       }
@@ -148,14 +191,27 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tvClockDate;
+      TextView tvClockDate = ViewBindings.findChildViewById(rootView, id);
+      if (tvClockDate == null) {
+        break missingId;
+      }
+
+      id = R.id.tvClockTime;
+      TextView tvClockTime = ViewBindings.findChildViewById(rootView, id);
+      if (tvClockTime == null) {
+        break missingId;
+      }
+
       id = R.id.webView;
       WebView webView = ViewBindings.findChildViewById(rootView, id);
       if (webView == null) {
         break missingId;
       }
 
-      return new ActivityMainBinding((DrawerLayout) rootView, btnSave, contentFrame, dimOverlay,
-          drawerLayout, etDimTime, etOffTime, etUrl, offOverlay, settingsDrawer, webView);
+      return new ActivityMainBinding((DrawerLayout) rootView, btnSave, cbDvdMove, cbShowClock,
+          clockContainer, contentFrame, dimOverlay, drawerLayout, etDimTime, etOffTime, etUrl,
+          offOverlay, settingsDrawer, tvClockDate, tvClockTime, webView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

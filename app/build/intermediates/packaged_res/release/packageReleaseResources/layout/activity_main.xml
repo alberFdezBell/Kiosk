@@ -27,13 +27,44 @@
             android:background="#99000000"
             android:visibility="gone" />
 
-        <!-- Overlay View for Stage 2: Off / Black Screen -->
-        <View
+        <!-- Overlay View for Stage 2: Off / Black Screen + Clock Screensaver -->
+        <FrameLayout
             android:id="@+id/offOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#FF000000"
-            android:visibility="gone" />
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/clockContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:padding="24dp">
+
+                <TextView
+                    android:id="@+id/tvClockTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="12:01"
+                    android:textColor="#FFFFFF"
+                    android:textSize="76sp"
+                    android:textStyle="bold"
+                    android:includeFontPadding="false" />
+
+                <TextView
+                    android:id="@+id/tvClockDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Martes, 8 De Septiembre"
+                    android:textColor="#64B5F6"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+        </FrameLayout>
     </FrameLayout>
 
     <!-- Sidebar Settings Drawer -->
@@ -130,8 +161,31 @@
                 android:background="#F0F4F8"
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 android:importantForAutofill="no" />
+
+            <!-- Clock Options Checkboxes -->
+            <CheckBox
+                android:id="@+id/cbShowClock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mostrar reloj al apagar pantalla"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:checked="true"
+                android:layout_marginBottom="10dp" />
+
+            <CheckBox
+                android:id="@+id/cbDvdMove"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mover reloj lentamente (estilo DVD)"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:checked="true"
+                android:layout_marginBottom="24dp" />
 
             <!-- Save Button -->
             <Button

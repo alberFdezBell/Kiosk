@@ -3206,6 +3206,8 @@ id cache_measures
 id callMeasure
 id cancel_button
 id carryVelocity
+id cbDvdMove
+id cbShowClock
 id center
 id centerCrop
 id centerInside
@@ -3221,6 +3223,7 @@ id circle_center
 id clear_text
 id clip_horizontal
 id clip_vertical
+id clockContainer
 id clockwise
 id closest
 id collapseActionView
@@ -3588,6 +3591,8 @@ id transition_position
 id transition_scene_layoutid_cache
 id transition_transform
 id triangle
+id tvClockDate
+id tvClockTime
 id unchecked
 id uniform
 id unlabeled
