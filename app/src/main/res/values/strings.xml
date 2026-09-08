@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Kiosk Browser</string>
+    <string name="title_settings">Ajustes / Opciones</string>
+    <string name="label_url">URL de inicio:</string>
+    <string name="hint_url">https://ejemplo.com</string>
+    <string name="label_dim_time">Tiempo para oscurecer (segundos):</string>
+    <string name="hint_dim_time">10</string>
+    <string name="label_off_time">Tiempo para apagar (segundos):</string>
+    <string name="hint_off_time">60</string>
+    <string name="btn_save">Guardar y Cargar Web</string>
+    <string name="msg_saved">Ajustes guardados correctamente</string>
+    <string name="msg_invalid_url">Introduce una URL válida</string>
+    <string name="msg_invalid_time">Revisa los tiempos introducidos</string>
+    <string name="drawer_open">Abrir menú</string>
+    <string name="drawer_close">Cerrar menú</string>
+</resources>
