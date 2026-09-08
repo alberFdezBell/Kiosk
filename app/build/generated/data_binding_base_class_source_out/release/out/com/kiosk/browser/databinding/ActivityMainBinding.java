@@ -27,6 +27,12 @@ public final class ActivityMainBinding implements ViewBinding {
   private final DrawerLayout rootView;
 
   @NonNull
+  public final Button btnClockSizeMinus;
+
+  @NonNull
+  public final Button btnClockSizePlus;
+
+  @NonNull
   public final Button btnSave;
 
   @NonNull
@@ -69,6 +75,9 @@ public final class ActivityMainBinding implements ViewBinding {
   public final TextView tvClockDate;
 
   @NonNull
+  public final TextView tvClockSizeValue;
+
+  @NonNull
   public final TextView tvClockTime;
 
   @NonNull
@@ -77,14 +86,18 @@ public final class ActivityMainBinding implements ViewBinding {
   @NonNull
   public final WebView webView;
 
-  private ActivityMainBinding(@NonNull DrawerLayout rootView, @NonNull Button btnSave,
-      @NonNull CheckBox cbDebug, @NonNull CheckBox cbDvdMove, @NonNull CheckBox cbShowClock,
+  private ActivityMainBinding(@NonNull DrawerLayout rootView, @NonNull Button btnClockSizeMinus,
+      @NonNull Button btnClockSizePlus, @NonNull Button btnSave, @NonNull CheckBox cbDebug,
+      @NonNull CheckBox cbDvdMove, @NonNull CheckBox cbShowClock,
       @NonNull LinearLayout clockContainer, @NonNull FrameLayout contentFrame,
       @NonNull View dimOverlay, @NonNull DrawerLayout drawerLayout, @NonNull EditText etDimTime,
       @NonNull EditText etOffTime, @NonNull EditText etUrl, @NonNull FrameLayout offOverlay,
       @NonNull ScrollView settingsDrawer, @NonNull TextView tvClockDate,
-      @NonNull TextView tvClockTime, @NonNull TextView tvDebugOverlay, @NonNull WebView webView) {
+      @NonNull TextView tvClockSizeValue, @NonNull TextView tvClockTime,
+      @NonNull TextView tvDebugOverlay, @NonNull WebView webView) {
     this.rootView = rootView;
+    this.btnClockSizeMinus = btnClockSizeMinus;
+    this.btnClockSizePlus = btnClockSizePlus;
     this.btnSave = btnSave;
     this.cbDebug = cbDebug;
     this.cbDvdMove = cbDvdMove;
@@ -99,6 +112,7 @@ public final class ActivityMainBinding implements ViewBinding {
     this.offOverlay = offOverlay;
     this.settingsDrawer = settingsDrawer;
     this.tvClockDate = tvClockDate;
+    this.tvClockSizeValue = tvClockSizeValue;
     this.tvClockTime = tvClockTime;
     this.tvDebugOverlay = tvDebugOverlay;
     this.webView = webView;
@@ -131,6 +145,18 @@ public final class ActivityMainBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btnClockSizeMinus;
+      Button btnClockSizeMinus = ViewBindings.findChildViewById(rootView, id);
+      if (btnClockSizeMinus == null) {
+        break missingId;
+      }
+
+      id = R.id.btnClockSizePlus;
+      Button btnClockSizePlus = ViewBindings.findChildViewById(rootView, id);
+      if (btnClockSizePlus == null) {
+        break missingId;
+      }
+
       id = R.id.btnSave;
       Button btnSave = ViewBindings.findChildViewById(rootView, id);
       if (btnSave == null) {
@@ -211,6 +237,12 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tvClockSizeValue;
+      TextView tvClockSizeValue = ViewBindings.findChildViewById(rootView, id);
+      if (tvClockSizeValue == null) {
+        break missingId;
+      }
+
       id = R.id.tvClockTime;
       TextView tvClockTime = ViewBindings.findChildViewById(rootView, id);
       if (tvClockTime == null) {
@@ -229,9 +261,10 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityMainBinding((DrawerLayout) rootView, btnSave, cbDebug, cbDvdMove,
-          cbShowClock, clockContainer, contentFrame, dimOverlay, drawerLayout, etDimTime, etOffTime,
-          etUrl, offOverlay, settingsDrawer, tvClockDate, tvClockTime, tvDebugOverlay, webView);
+      return new ActivityMainBinding((DrawerLayout) rootView, btnClockSizeMinus, btnClockSizePlus,
+          btnSave, cbDebug, cbDvdMove, cbShowClock, clockContainer, contentFrame, dimOverlay,
+          drawerLayout, etDimTime, etOffTime, etUrl, offOverlay, settingsDrawer, tvClockDate,
+          tvClockSizeValue, tvClockTime, tvDebugOverlay, webView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

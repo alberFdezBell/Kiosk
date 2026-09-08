@@ -10,6 +10,8 @@ color teal_200
 color teal_700
 color white
 drawable ic_launcher_foreground
+id btnClockSizeMinus
+id btnClockSizePlus
 id btnSave
 id cbDebug
 id cbDvdMove
@@ -24,6 +26,7 @@ id etUrl
 id offOverlay
 id settingsDrawer
 id tvClockDate
+id tvClockSizeValue
 id tvClockTime
 id tvDebugOverlay
 id webView

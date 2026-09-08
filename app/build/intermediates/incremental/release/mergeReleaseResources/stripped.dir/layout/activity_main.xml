@@ -179,6 +179,60 @@
                 android:layout_marginBottom="16dp"
                 android:importantForAutofill="no" />
 
+            <!-- Clock Size Controls -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tamaño del Reloj:"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#333333"
+                android:layout_marginBottom="6dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="#F0F4F8"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:layout_marginBottom="16dp">
+
+                <Button
+                    android:id="@+id/btnClockSizeMinus"
+                    android:layout_width="50dp"
+                    android:layout_height="40dp"
+                    android:text="-"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="#6200EE"
+                    android:padding="0dp" />
+
+                <TextView
+                    android:id="@+id/tvClockSizeValue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="130 sp"
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btnClockSizePlus"
+                    android:layout_width="50dp"
+                    android:layout_height="40dp"
+                    android:text="+"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="#6200EE"
+                    android:padding="0dp" />
+            </LinearLayout>
+
             <!-- Clock Options Checkboxes -->
             <CheckBox
                 android:id="@+id/cbShowClock"

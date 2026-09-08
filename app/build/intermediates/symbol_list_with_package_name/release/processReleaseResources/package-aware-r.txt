@@ -3200,6 +3200,8 @@ id bounce
 id bounceBoth
 id bounceEnd
 id bounceStart
+id btnClockSizeMinus
+id btnClockSizePlus
 id btnSave
 id buttonPanel
 id cache_measures
@@ -3593,6 +3595,7 @@ id transition_scene_layoutid_cache
 id transition_transform
 id triangle
 id tvClockDate
+id tvClockSizeValue
 id tvClockTime
 id tvDebugOverlay
 id unchecked

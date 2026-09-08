@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowInsets
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private var showClock: Boolean = true
     private var dvdMoveEnabled: Boolean = true
     private var debugEnabled: Boolean = false
+    private var clockSizeSp: Int = 130
 
     private enum class ScreenState {
         NORMAL, DIM, OFF
@@ -83,6 +85,7 @@ class MainActivity : AppCompatActivity() {
         private const val KEY_SHOW_CLOCK = "pref_show_clock"
         private const val KEY_DVD_MOVE = "pref_dvd_move"
         private const val KEY_DEBUG = "pref_debug"
+        private const val KEY_CLOCK_SIZE = "pref_clock_size"
 
         private const val DEFAULT_URL = "https://pueblo.aferbel.es"
         private const val DEFAULT_DIM_SEC = 10
@@ -90,6 +93,9 @@ class MainActivity : AppCompatActivity() {
         private const val DEFAULT_SHOW_CLOCK = true
         private const val DEFAULT_DVD_MOVE = true
         private const val DEFAULT_DEBUG = false
+        private const val DEFAULT_CLOCK_SIZE = 130
+        private const val MIN_CLOCK_SIZE = 40
+        private const val MAX_CLOCK_SIZE = 220
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -154,6 +160,51 @@ class MainActivity : AppCompatActivity() {
         binding.btnSave.setOnClickListener {
             saveAndApplySettings()
         }
+
+        binding.btnClockSizeMinus.setOnClickListener {
+            adjustClockSize(-10)
+        }
+
+        binding.btnClockSizePlus.setOnClickListener {
+            adjustClockSize(10)
+        }
+    }
+
+    private fun adjustClockSize(delta: Int) {
+        val newSize = (clockSizeSp + delta).coerceIn(MIN_CLOCK_SIZE, MAX_CLOCK_SIZE)
+        
+        // Protect from overflowing screen bounds
+        val displayMetrics = resources.displayMetrics
+        val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
+        val estimatedClockWidthDp = newSize * 3.5f // Approximate character width factor
+
+        if (delta > 0 && estimatedClockWidthDp > (screenWidthDp - 20)) {
+            Toast.makeText(this, "Límite máximo alcanzado para esta pantalla", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        clockSizeSp = newSize
+        updateClockSizeUI()
+        showLiveClockPreview()
+    }
+
+    private fun updateClockSizeUI() {
+        binding.tvClockSizeValue.text = "$clockSizeSp sp"
+        binding.tvClockTime.setTextSize(TypedValue.COMPLEX_UNIT_SP, clockSizeSp.toFloat())
+        
+        val dateSizeSp = (clockSizeSp * 0.23f).coerceAtLeast(14f)
+        binding.tvClockDate.setTextSize(TypedValue.COMPLEX_UNIT_SP, dateSizeSp)
+    }
+
+    private fun showLiveClockPreview() {
+        updateClockDisplay()
+        binding.clockContainer.visibility = View.VISIBLE
+        binding.offOverlay.alpha = 0.90f
+        binding.offOverlay.visibility = View.VISIBLE
+
+        binding.offOverlay.post {
+            initClockPosition()
+        }
     }
 
     private fun loadSettings() {
@@ -163,6 +214,7 @@ class MainActivity : AppCompatActivity() {
         showClock = prefs.getBoolean(KEY_SHOW_CLOCK, DEFAULT_SHOW_CLOCK)
         dvdMoveEnabled = prefs.getBoolean(KEY_DVD_MOVE, DEFAULT_DVD_MOVE)
         debugEnabled = prefs.getBoolean(KEY_DEBUG, DEFAULT_DEBUG)
+        clockSizeSp = prefs.getInt(KEY_CLOCK_SIZE, DEFAULT_CLOCK_SIZE)
 
         binding.etUrl.setText(url)
         binding.etDimTime.setText(dimTimeoutSec.toString())
@@ -172,6 +224,7 @@ class MainActivity : AppCompatActivity() {
         binding.cbDebug.isChecked = debugEnabled
 
         binding.tvDebugOverlay.visibility = if (debugEnabled) View.VISIBLE else View.GONE
+        updateClockSizeUI()
 
         loadUrl(url)
         resetIdleTimers()
@@ -212,6 +265,7 @@ class MainActivity : AppCompatActivity() {
             .putBoolean(KEY_SHOW_CLOCK, showClock)
             .putBoolean(KEY_DVD_MOVE, dvdMoveEnabled)
             .putBoolean(KEY_DEBUG, debugEnabled)
+            .putInt(KEY_CLOCK_SIZE, clockSizeSp)
             .apply()
 
         binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -309,8 +363,8 @@ class MainActivity : AppCompatActivity() {
             params.gravity = android.view.Gravity.TOP or android.view.Gravity.START
             binding.clockContainer.layoutParams = params
 
-            val centerX = ((parentW - clockW) / 2).toFloat()
-            val centerY = ((parentH - clockH) / 2).toFloat()
+            val centerX = ((parentW - clockW) / 2).toFloat().coerceAtLeast(0f)
+            val centerY = ((parentH - clockH) / 2).toFloat().coerceAtLeast(0f)
 
             binding.clockContainer.x = centerX
             binding.clockContainer.y = centerY
@@ -329,10 +383,13 @@ class MainActivity : AppCompatActivity() {
         val centerX = ((parentW - clockW) / 2).toFloat()
         val centerY = ((parentH - clockH) / 2).toFloat()
 
-        // Shift by a subtle random offset (between -60px and +60px) around center
-        val maxOffset = 60f
-        val targetX = (centerX + Random.nextFloat() * (maxOffset * 2) - maxOffset).coerceIn(0f, (parentW - clockW).toFloat())
-        val targetY = (centerY + Random.nextFloat() * (maxOffset * 2) - maxOffset).coerceIn(0f, (parentH - clockH).toFloat())
+        // Shift by a subtle random offset (between -40px and +40px) around center
+        val maxOffset = 40f
+        val maxX = (parentW - clockW).toFloat().coerceAtLeast(0f)
+        val maxY = (parentH - clockH).toFloat().coerceAtLeast(0f)
+
+        val targetX = (centerX + Random.nextFloat() * (maxOffset * 2) - maxOffset).coerceIn(0f, maxX)
+        val targetY = (centerY + Random.nextFloat() * (maxOffset * 2) - maxOffset).coerceIn(0f, maxY)
 
         binding.clockContainer.animate()
             .x(targetX)
@@ -348,7 +405,7 @@ class MainActivity : AppCompatActivity() {
             val posX = binding.clockContainer.x.toInt()
             val posY = binding.clockContainer.y.toInt()
             val stateName = currentState.name
-            binding.tvDebugOverlay.text = "[DEBUG]\nEstado: $stateName\nReloj X: ${posX}px, Y: ${posY}px\nMinuto: $lastMinute"
+            binding.tvDebugOverlay.text = "[DEBUG]\nEstado: $stateName\nTamaño: ${clockSizeSp}sp\nReloj X: ${posX}px, Y: ${posY}px\nMinuto: $lastMinute"
         }
     }
 
