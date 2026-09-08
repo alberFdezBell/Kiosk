@@ -51,50 +51,35 @@ Puedes compilar la APK directamente usando el Gradle Wrapper incluido:
 
 - **Windows (PowerShell / CMD)**:
   ```powershell
-  .\gradlew.bat assembleDebug
+  .\gradlew.bat assembleRelease
   ```
 - **Linux / macOS**:
   ```bash
   chmod +x gradlew
-  ./gradlew assembleDebug
+  ./gradlew assembleRelease
   ```
 
-El archivo APK generado se guardará en:  
-`app/build/outputs/apk/debug/app-debug.apk`
+El archivo APK firmado listo para instalar en cualquier móvil se guardará en:  
+`app/build/outputs/apk/release/app-release.apk`
 
 ---
 
-## 📦 Cómo hacer una Release en GitHub
+## 📦 Releases Automatizadas en GitHub (100% Automático y Firmado)
 
-Este repositorio no contiene claves ni variables de entorno privadas, por lo que está listo para subirse directamente a GitHub.
+El repositorio incluye un flujo de trabajo configurado en `.github/workflows/release.yml`.
 
-### Método A: Crear Release Manualmente
-1. Genera la APK de Release:
-   ```bash
-   ./gradlew assembleRelease
-   ```
-   La APK se generará en `app/build/outputs/apk/release/app-release-unsigned.apk`.
+### ¿Cómo funciona la Release automática?
+Cada vez que hagas `push` a la rama `main`, Gradle compilará y firmará la APK automáticamente en la nube. GitHub Actions:
+1. Compilará y firmará la APK (`app-release.apk`).
+2. Creará o actualizará la Release **`v1.0.0`** en GitHub adjuntando la APK válida y lista para instalar directamente en cualquier dispositivo Android.
 
-2. *(Opcional)* Si deseas generar una APK firmada digitalmente con tu propia Keystore:
-   - En Android Studio ve a **Build > Generate Signed Bundle / APK...**
-   - Elige **APK**, crea/selecciona tu archivo Keystore y genera la versión final.
+### Pasos para publicar una actualización:
+Simplemente ejecuta en tu terminal:
 
-3. Ve a tu repositorio en GitHub:
-   - Entra en la sección **Releases** (en el lateral derecho).
-   - Haz clic en **Draft a new release**.
-   - Crea un nuevo tag (ejemplo: `v1.0.0`).
-   - Escribe un título (ejemplo: `Kiosk Browser Release v1.0.0`).
-   - Arrastra y suelta el archivo `.apk` en el recuadro de adjuntos.
-   - Haz clic en **Publish release**.
-
-### Método B: Release Automatizada mediante GitHub Actions
-El proyecto incluye un flujo de trabajo preconfigurado en `.github/workflows/release.yml`.
-
-Para publicar una nueva versión automáticamente:
 ```bash
 git add .
-git commit -m "Release v1.0.0"
-git tag v1.0.0
-git push origin main --tags
+git commit -m "Firma automatica de APK configurada"
+git push origin main
 ```
-GitHub Actions compilará la APK en la nube y creará la **Release en GitHub** automáticamente con el archivo APK listo para descargar.
+
+¡Y listo! Ve a la sección **Releases** de tu repositorio en GitHub para descargar la APK firmada válida.
