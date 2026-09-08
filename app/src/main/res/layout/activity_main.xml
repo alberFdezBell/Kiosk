@@ -34,6 +34,20 @@
             android:layout_height="match_parent"
             android:background="#FF000000"
             android:visibility="gone" />
+
+        <!-- Floating Button to Open Settings Sidebar -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnOpenDrawer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start"
+            android:layout_margin="16dp"
+            android:alpha="0.6"
+            android:contentDescription="@string/title_settings"
+            app:fabSize="mini"
+            app:srcCompat="@android:drawable/ic_menu_preferences"
+            app:tint="@color/white"
+            app:backgroundTint="@color/black" />
     </FrameLayout>
 
     <!-- Sidebar Settings Drawer -->
@@ -120,7 +134,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nota: Desliza desde el borde izquierdo para volver a abrir este menú en cualquier momento."
+                android:text="Nota: Desliza desde el borde izquierdo o pulsa el icono superior para abrir este menú."
                 android:textSize="12sp"
                 android:textColor="#666666"
                 android:layout_marginTop="24dp" />
