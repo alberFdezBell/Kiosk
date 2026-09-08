@@ -15,7 +15,6 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import com.kiosk.browser.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -47,7 +46,6 @@ class MainActivity : AppCompatActivity() {
         private const val KEY_URL = "pref_url"
         private const val KEY_DIM_SEC = "pref_dim_sec"
         private const val KEY_OFF_SEC = "pref_off_sec"
-        private const val KEY_FIRST_LAUNCH = "pref_first_launch"
 
         private const val DEFAULT_URL = "https://google.com"
         private const val DEFAULT_DIM_SEC = 10
@@ -85,30 +83,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupDrawerAndSettings() {
-        binding.btnOpenDrawer.setOnClickListener {
-            binding.drawerLayout.openDrawer(GravityCompat.START)
-        }
-
         binding.btnSave.setOnClickListener {
             saveAndApplySettings()
         }
-
-        binding.drawerLayout.addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
-            override fun onDrawerOpened(drawerView: View) {
-                binding.btnOpenDrawer.visibility = View.GONE
-            }
-
-            override fun onDrawerClosed(drawerView: View) {
-                binding.btnOpenDrawer.visibility = View.VISIBLE
-            }
-        })
     }
 
     private fun loadSettings() {
         val url = prefs.getString(KEY_URL, DEFAULT_URL) ?: DEFAULT_URL
         dimTimeoutSec = prefs.getInt(KEY_DIM_SEC, DEFAULT_DIM_SEC)
         offTimeoutSec = prefs.getInt(KEY_OFF_SEC, DEFAULT_OFF_SEC)
-        val isFirstLaunch = prefs.getBoolean(KEY_FIRST_LAUNCH, true)
 
         binding.etUrl.setText(url)
         binding.etDimTime.setText(dimTimeoutSec.toString())
@@ -116,11 +99,6 @@ class MainActivity : AppCompatActivity() {
 
         loadUrl(url)
         resetIdleTimers()
-
-        if (isFirstLaunch) {
-            binding.drawerLayout.openDrawer(GravityCompat.START)
-            prefs.edit().putBoolean(KEY_FIRST_LAUNCH, false).apply()
-        }
     }
 
     private fun saveAndApplySettings() {

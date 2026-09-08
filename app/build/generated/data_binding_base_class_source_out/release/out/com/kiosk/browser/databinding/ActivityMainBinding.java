@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 import androidx.annotation.NonNull;
@@ -13,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
-import com.google.android.material.textfield.TextInputEditText;
 import com.kiosk.browser.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -36,13 +36,13 @@ public final class ActivityMainBinding implements ViewBinding {
   public final DrawerLayout drawerLayout;
 
   @NonNull
-  public final TextInputEditText etDimTime;
+  public final EditText etDimTime;
 
   @NonNull
-  public final TextInputEditText etOffTime;
+  public final EditText etOffTime;
 
   @NonNull
-  public final TextInputEditText etUrl;
+  public final EditText etUrl;
 
   @NonNull
   public final View offOverlay;
@@ -55,9 +55,9 @@ public final class ActivityMainBinding implements ViewBinding {
 
   private ActivityMainBinding(@NonNull DrawerLayout rootView, @NonNull Button btnSave,
       @NonNull FrameLayout contentFrame, @NonNull View dimOverlay,
-      @NonNull DrawerLayout drawerLayout, @NonNull TextInputEditText etDimTime,
-      @NonNull TextInputEditText etOffTime, @NonNull TextInputEditText etUrl,
-      @NonNull View offOverlay, @NonNull ScrollView settingsDrawer, @NonNull WebView webView) {
+      @NonNull DrawerLayout drawerLayout, @NonNull EditText etDimTime, @NonNull EditText etOffTime,
+      @NonNull EditText etUrl, @NonNull View offOverlay, @NonNull ScrollView settingsDrawer,
+      @NonNull WebView webView) {
     this.rootView = rootView;
     this.btnSave = btnSave;
     this.contentFrame = contentFrame;
@@ -119,19 +119,19 @@ public final class ActivityMainBinding implements ViewBinding {
       DrawerLayout drawerLayout = (DrawerLayout) rootView;
 
       id = R.id.etDimTime;
-      TextInputEditText etDimTime = ViewBindings.findChildViewById(rootView, id);
+      EditText etDimTime = ViewBindings.findChildViewById(rootView, id);
       if (etDimTime == null) {
         break missingId;
       }
 
       id = R.id.etOffTime;
-      TextInputEditText etOffTime = ViewBindings.findChildViewById(rootView, id);
+      EditText etOffTime = ViewBindings.findChildViewById(rootView, id);
       if (etOffTime == null) {
         break missingId;
       }
 
       id = R.id.etUrl;
-      TextInputEditText etUrl = ViewBindings.findChildViewById(rootView, id);
+      EditText etUrl = ViewBindings.findChildViewById(rootView, id);
       if (etUrl == null) {
         break missingId;
       }
