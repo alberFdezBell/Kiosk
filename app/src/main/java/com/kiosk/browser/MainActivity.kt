@@ -42,11 +42,11 @@ class MainActivity : AppCompatActivity() {
 
     private var currentState = ScreenState.NORMAL
 
-    // DVD Motion Variables
+    // DVD Motion Variables (Slower, smooth gliding speed)
     private var dvdPosX = 0f
     private var dvdPosY = 0f
-    private var dvdStepX = 2f
-    private var dvdStepY = 2f
+    private var dvdStepX = 0.6f
+    private var dvdStepY = 0.6f
 
     private val runnableDim = Runnable {
         setScreenState(ScreenState.DIM)
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         override fun run() {
             if (currentState == ScreenState.OFF && showClock && dvdMoveEnabled) {
                 updateDvdPosition()
-                handler.postDelayed(this, 30L)
+                handler.postDelayed(this, 40L)
             }
         }
     }
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         private const val KEY_SHOW_CLOCK = "pref_show_clock"
         private const val KEY_DVD_MOVE = "pref_dvd_move"
 
-        private const val DEFAULT_URL = "https://google.com"
+        private const val DEFAULT_URL = "https://pueblo.aferbel.es"
         private const val DEFAULT_DIM_SEC = 10
         private const val DEFAULT_OFF_SEC = 60
         private const val DEFAULT_SHOW_CLOCK = true
@@ -249,10 +249,11 @@ class MainActivity : AppCompatActivity() {
                 handler.removeCallbacks(runnableDvdMotion)
             }
             ScreenState.OFF -> {
-                lp.screenBrightness = 0.00f
                 binding.dimOverlay.visibility = View.GONE
 
                 if (showClock) {
+                    // Bright clock text against pure #000000 pitch-black screen (0 OLED backlight bleed)
+                    lp.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
                     binding.clockContainer.visibility = View.VISIBLE
                     updateClockDisplay()
 
@@ -266,6 +267,7 @@ class MainActivity : AppCompatActivity() {
                         handler.post(runnableDvdMotion)
                     }
                 } else {
+                    lp.screenBrightness = 0.00f
                     binding.clockContainer.visibility = View.GONE
                 }
 
@@ -300,13 +302,8 @@ class MainActivity : AppCompatActivity() {
             val params = binding.clockContainer.layoutParams as FrameLayout.LayoutParams
             params.gravity = android.view.Gravity.TOP or android.view.Gravity.START
 
-            if (!dvdMoveEnabled) {
-                dvdPosX = ((parentW - clockW) / 2).toFloat()
-                dvdPosY = ((parentH - clockH) / 2).toFloat()
-            } else {
-                dvdPosX = ((parentW - clockW) / 2).toFloat()
-                dvdPosY = ((parentH - clockH) / 2).toFloat()
-            }
+            dvdPosX = ((parentW - clockW) / 2).toFloat()
+            dvdPosY = ((parentH - clockH) / 2).toFloat()
 
             binding.clockContainer.layoutParams = params
             binding.clockContainer.x = dvdPosX

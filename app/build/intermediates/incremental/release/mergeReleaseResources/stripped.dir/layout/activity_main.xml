@@ -107,7 +107,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:inputType="textUri"
-                android:text="https://google.com"
+                android:text="https://pueblo.aferbel.es"
                 android:textColor="#000000"
                 android:textColorHint="#888888"
                 android:background="#F0F4F8"
