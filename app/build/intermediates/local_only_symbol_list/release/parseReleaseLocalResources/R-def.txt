@@ -11,6 +11,7 @@ color teal_700
 color white
 drawable ic_launcher_foreground
 id btnSave
+id cbDebug
 id cbDvdMove
 id cbShowClock
 id clockContainer
@@ -24,6 +25,7 @@ id offOverlay
 id settingsDrawer
 id tvClockDate
 id tvClockTime
+id tvDebugOverlay
 id webView
 layout activity_main
 mipmap ic_launcher

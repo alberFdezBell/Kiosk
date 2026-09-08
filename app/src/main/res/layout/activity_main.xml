@@ -50,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:text="12:01"
                     android:textColor="#FFFFFF"
-                    android:textSize="76sp"
+                    android:textSize="130sp"
                     android:textStyle="bold"
                     android:includeFontPadding="false" />
 
@@ -60,11 +60,26 @@
                     android:layout_height="wrap_content"
                     android:text="Martes, 8 De Septiembre"
                     android:textColor="#64B5F6"
-                    android:textSize="20sp"
+                    android:textSize="30sp"
                     android:textStyle="bold"
-                    android:layout_marginTop="4dp" />
+                    android:layout_marginTop="8dp" />
             </LinearLayout>
         </FrameLayout>
+
+        <!-- Debug Overlay View -->
+        <TextView
+            android:id="@+id/tvDebugOverlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_margin="16dp"
+            android:background="#CC000000"
+            android:textColor="#00FF00"
+            android:textSize="12sp"
+            android:padding="8dp"
+            android:fontFamily="monospace"
+            android:text="[Debug] X=0, Y=0"
+            android:visibility="gone" />
     </FrameLayout>
 
     <!-- Sidebar Settings Drawer -->
@@ -180,11 +195,23 @@
                 android:id="@+id/cbDvdMove"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Mover reloj lentamente (estilo DVD)"
+                android:text="Mover reloj cada minuto (protección)"
                 android:textColor="#000000"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:checked="true"
+                android:layout_marginBottom="10dp" />
+
+            <!-- Debug Checkbox -->
+            <CheckBox
+                android:id="@+id/cbDebug"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Depuración (mostrar coordenadas X,Y)"
+                android:textColor="#D32F2F"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:checked="false"
                 android:layout_marginBottom="24dp" />
 
             <!-- Save Button -->

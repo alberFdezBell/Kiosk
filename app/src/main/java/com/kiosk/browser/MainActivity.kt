@@ -21,8 +21,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import com.kiosk.browser.databinding.ActivityMainBinding
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private var offTimeoutSec: Int = 60
     private var showClock: Boolean = true
     private var dvdMoveEnabled: Boolean = true
+    private var debugEnabled: Boolean = false
 
     private enum class ScreenState {
         NORMAL, DIM, OFF
@@ -42,11 +45,8 @@ class MainActivity : AppCompatActivity() {
 
     private var currentState = ScreenState.NORMAL
 
-    // DVD Motion Variables (Slower, smooth gliding speed)
-    private var dvdPosX = 0f
-    private var dvdPosY = 0f
-    private var dvdStepX = 0.6f
-    private var dvdStepY = 0.6f
+    // Per-Minute Pixel Shift Tracking
+    private var lastMinute: Int = -1
 
     private val runnableDim = Runnable {
         setScreenState(ScreenState.DIM)
@@ -59,17 +59,18 @@ class MainActivity : AppCompatActivity() {
     private val runnableClockTick = object : Runnable {
         override fun run() {
             if (currentState == ScreenState.OFF && showClock) {
-                updateClockDisplay()
+                val currentMin = Calendar.getInstance().get(Calendar.MINUTE)
+                if (currentMin != lastMinute) {
+                    lastMinute = currentMin
+                    updateClockDisplay()
+                    if (dvdMoveEnabled) {
+                        shiftClockPositionPerMinute()
+                    }
+                } else {
+                    updateClockDisplay()
+                }
+                updateDebugInfo()
                 handler.postDelayed(this, 1000L)
-            }
-        }
-    }
-
-    private val runnableDvdMotion = object : Runnable {
-        override fun run() {
-            if (currentState == ScreenState.OFF && showClock && dvdMoveEnabled) {
-                updateDvdPosition()
-                handler.postDelayed(this, 40L)
             }
         }
     }
@@ -81,12 +82,14 @@ class MainActivity : AppCompatActivity() {
         private const val KEY_OFF_SEC = "pref_off_sec"
         private const val KEY_SHOW_CLOCK = "pref_show_clock"
         private const val KEY_DVD_MOVE = "pref_dvd_move"
+        private const val KEY_DEBUG = "pref_debug"
 
         private const val DEFAULT_URL = "https://pueblo.aferbel.es"
         private const val DEFAULT_DIM_SEC = 10
         private const val DEFAULT_OFF_SEC = 60
         private const val DEFAULT_SHOW_CLOCK = true
         private const val DEFAULT_DVD_MOVE = true
+        private const val DEFAULT_DEBUG = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -159,12 +162,16 @@ class MainActivity : AppCompatActivity() {
         offTimeoutSec = prefs.getInt(KEY_OFF_SEC, DEFAULT_OFF_SEC)
         showClock = prefs.getBoolean(KEY_SHOW_CLOCK, DEFAULT_SHOW_CLOCK)
         dvdMoveEnabled = prefs.getBoolean(KEY_DVD_MOVE, DEFAULT_DVD_MOVE)
+        debugEnabled = prefs.getBoolean(KEY_DEBUG, DEFAULT_DEBUG)
 
         binding.etUrl.setText(url)
         binding.etDimTime.setText(dimTimeoutSec.toString())
         binding.etOffTime.setText(offTimeoutSec.toString())
         binding.cbShowClock.isChecked = showClock
         binding.cbDvdMove.isChecked = dvdMoveEnabled
+        binding.cbDebug.isChecked = debugEnabled
+
+        binding.tvDebugOverlay.visibility = if (debugEnabled) View.VISIBLE else View.GONE
 
         loadUrl(url)
         resetIdleTimers()
@@ -194,6 +201,9 @@ class MainActivity : AppCompatActivity() {
         offTimeoutSec = offInput
         showClock = binding.cbShowClock.isChecked
         dvdMoveEnabled = binding.cbDvdMove.isChecked
+        debugEnabled = binding.cbDebug.isChecked
+
+        binding.tvDebugOverlay.visibility = if (debugEnabled) View.VISIBLE else View.GONE
 
         prefs.edit()
             .putString(KEY_URL, formattedUrl)
@@ -201,6 +211,7 @@ class MainActivity : AppCompatActivity() {
             .putInt(KEY_OFF_SEC, offTimeoutSec)
             .putBoolean(KEY_SHOW_CLOCK, showClock)
             .putBoolean(KEY_DVD_MOVE, dvdMoveEnabled)
+            .putBoolean(KEY_DEBUG, debugEnabled)
             .apply()
 
         binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -218,7 +229,6 @@ class MainActivity : AppCompatActivity() {
         handler.removeCallbacks(runnableDim)
         handler.removeCallbacks(runnableOff)
         handler.removeCallbacks(runnableClockTick)
-        handler.removeCallbacks(runnableDvdMotion)
 
         if (dimTimeoutSec > 0) {
             handler.postDelayed(runnableDim, dimTimeoutSec * 1000L)
@@ -239,33 +249,28 @@ class MainActivity : AppCompatActivity() {
                 binding.dimOverlay.visibility = View.GONE
                 binding.offOverlay.visibility = View.GONE
                 handler.removeCallbacks(runnableClockTick)
-                handler.removeCallbacks(runnableDvdMotion)
             }
             ScreenState.DIM -> {
                 lp.screenBrightness = 0.05f
                 binding.dimOverlay.visibility = View.VISIBLE
                 binding.offOverlay.visibility = View.GONE
                 handler.removeCallbacks(runnableClockTick)
-                handler.removeCallbacks(runnableDvdMotion)
             }
             ScreenState.OFF -> {
                 binding.dimOverlay.visibility = View.GONE
 
                 if (showClock) {
-                    // Bright clock text against pure #000000 pitch-black screen (0 OLED backlight bleed)
-                    lp.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
+                    // Low hardware brightness (2%) to eliminate backlight bleed on LCDs while keeping clock legible
+                    lp.screenBrightness = 0.02f
                     binding.clockContainer.visibility = View.VISIBLE
                     updateClockDisplay()
 
-                    // Reset DVD position to center initially
                     binding.offOverlay.post {
-                        initDvdPosition()
+                        initClockPosition()
                     }
 
+                    lastMinute = Calendar.getInstance().get(Calendar.MINUTE)
                     handler.post(runnableClockTick)
-                    if (dvdMoveEnabled) {
-                        handler.post(runnableDvdMotion)
-                    }
                 } else {
                     lp.screenBrightness = 0.00f
                     binding.clockContainer.visibility = View.GONE
@@ -277,6 +282,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         window.attributes = lp
+        updateDebugInfo()
     }
 
     private fun updateClockDisplay() {
@@ -292,7 +298,7 @@ class MainActivity : AppCompatActivity() {
         binding.tvClockDate.text = dateStr
     }
 
-    private fun initDvdPosition() {
+    private fun initClockPosition() {
         val parentW = binding.offOverlay.width
         val parentH = binding.offOverlay.height
         val clockW = binding.clockContainer.width
@@ -301,17 +307,18 @@ class MainActivity : AppCompatActivity() {
         if (parentW > 0 && parentH > 0 && clockW > 0 && clockH > 0) {
             val params = binding.clockContainer.layoutParams as FrameLayout.LayoutParams
             params.gravity = android.view.Gravity.TOP or android.view.Gravity.START
-
-            dvdPosX = ((parentW - clockW) / 2).toFloat()
-            dvdPosY = ((parentH - clockH) / 2).toFloat()
-
             binding.clockContainer.layoutParams = params
-            binding.clockContainer.x = dvdPosX
-            binding.clockContainer.y = dvdPosY
+
+            val centerX = ((parentW - clockW) / 2).toFloat()
+            val centerY = ((parentH - clockH) / 2).toFloat()
+
+            binding.clockContainer.x = centerX
+            binding.clockContainer.y = centerY
+            updateDebugInfo()
         }
     }
 
-    private fun updateDvdPosition() {
+    private fun shiftClockPositionPerMinute() {
         val parentW = binding.offOverlay.width
         val parentH = binding.offOverlay.height
         val clockW = binding.clockContainer.width
@@ -319,30 +326,30 @@ class MainActivity : AppCompatActivity() {
 
         if (parentW <= 0 || parentH <= 0 || clockW <= 0 || clockH <= 0) return
 
-        val maxX = (parentW - clockW).toFloat()
-        val maxY = (parentH - clockH).toFloat()
+        val centerX = ((parentW - clockW) / 2).toFloat()
+        val centerY = ((parentH - clockH) / 2).toFloat()
 
-        dvdPosX += dvdStepX
-        dvdPosY += dvdStepY
+        // Shift by a subtle random offset (between -60px and +60px) around center
+        val maxOffset = 60f
+        val targetX = (centerX + Random.nextFloat() * (maxOffset * 2) - maxOffset).coerceIn(0f, (parentW - clockW).toFloat())
+        val targetY = (centerY + Random.nextFloat() * (maxOffset * 2) - maxOffset).coerceIn(0f, (parentH - clockH).toFloat())
 
-        if (dvdPosX <= 0f) {
-            dvdPosX = 0f
-            dvdStepX = Math.abs(dvdStepX)
-        } else if (dvdPosX >= maxX) {
-            dvdPosX = maxX
-            dvdStepX = -Math.abs(dvdStepX)
+        binding.clockContainer.animate()
+            .x(targetX)
+            .y(targetY)
+            .setDuration(600L)
+            .start()
+
+        updateDebugInfo()
+    }
+
+    private fun updateDebugInfo() {
+        if (debugEnabled) {
+            val posX = binding.clockContainer.x.toInt()
+            val posY = binding.clockContainer.y.toInt()
+            val stateName = currentState.name
+            binding.tvDebugOverlay.text = "[DEBUG]\nEstado: $stateName\nReloj X: ${posX}px, Y: ${posY}px\nMinuto: $lastMinute"
         }
-
-        if (dvdPosY <= 0f) {
-            dvdPosY = 0f
-            dvdStepY = Math.abs(dvdStepY)
-        } else if (dvdPosY >= maxY) {
-            dvdPosY = maxY
-            dvdStepY = -Math.abs(dvdStepY)
-        }
-
-        binding.clockContainer.x = dvdPosX
-        binding.clockContainer.y = dvdPosY
     }
 
     private fun wakeScreen() {
@@ -376,6 +383,5 @@ class MainActivity : AppCompatActivity() {
         handler.removeCallbacks(runnableDim)
         handler.removeCallbacks(runnableOff)
         handler.removeCallbacks(runnableClockTick)
-        handler.removeCallbacks(runnableDvdMotion)
     }
 }

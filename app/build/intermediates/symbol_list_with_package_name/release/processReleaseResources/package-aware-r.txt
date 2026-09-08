@@ -3206,6 +3206,7 @@ id cache_measures
 id callMeasure
 id cancel_button
 id carryVelocity
+id cbDebug
 id cbDvdMove
 id cbShowClock
 id center
@@ -3593,6 +3594,7 @@ id transition_transform
 id triangle
 id tvClockDate
 id tvClockTime
+id tvDebugOverlay
 id unchecked
 id uniform
 id unlabeled
